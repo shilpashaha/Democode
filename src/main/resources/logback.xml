@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+
+<configuration>
+    <property name="HOME" value="D:/demoLogs" />
+    <!-- This is appender added for NON_PROD_ENV logging.This will send logs 
+        to console -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level
+                %logger{36} - %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+    <!-- This is appender added for NON_PROD_ENV logging.This will send logs 
+        to file -->
+    <appender name="FILE-AUDIT_NON_PROD_ENV"
+        class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${HOME}/debug.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>
+                %d{yyyy-MM-dd HH:mm:ss} - %msg%n
+            </Pattern>
+        </encoder>
+        <rollingPolicy
+            class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${HOME}/archived/debug.%d{yyyy-MM-dd}.%i.log </fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy
+                class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+    
+    <appender name="htmlAppender" class="ch.qos.logback.core.FileAppender">
+        <file>log.html</file>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="ch.qos.logback.classic.html.HTMLLayout">
+                <pattern>%thread%level%logger%msg</pattern>
+            </layout>
+        </encoder>
+    </appender>
+
+    <!-- Send logs to both console and file audit for other environment.It 
+        should enable locally.It must be commented while deploying on PRODUCTION -->
+    <logger name="com.porite.demo" level="DEBUG">
+        <appender-ref ref="FILE-AUDIT_NON_PROD_ENV" />
+        <appender-ref ref="htmlAppender" />
+        <appender-ref ref="STDOUT" />
+    </logger>
+</configuration>
